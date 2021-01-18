@@ -33,4 +33,5 @@ public class ContractController {
         modelAndView.addObject("balance", service.getBalanceById(id));
         return modelAndView;
     }
+
 }
