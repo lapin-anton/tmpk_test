@@ -181,3 +181,57 @@ INSERT INTO `tmpk`.`incoming` (`amount`, `date`, `contract_id`) VALUES ('350', '
 INSERT INTO `tmpk`.`incoming` (`amount`, `date`, `contract_id`) VALUES ('600', '2020-08-04', '2');
 INSERT INTO `tmpk`.`incoming` (`amount`, `date`, `contract_id`) VALUES ('350', '2020-09-02', '1');
 INSERT INTO `tmpk`.`incoming` (`amount`, `date`, `contract_id`) VALUES ('600', '2020-09-05', '2');
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `tmpk`.`tax_info` AS
+    SELECT 
+        `tmpk`.`tax`.`id` AS `id`,
+        `tmpk`.`tax`.`amount` AS `amount`,
+        `tmpk`.`tax`.`date` AS `date`,
+        `tmpk`.`tariff`.`name` AS `tariff`,
+        `tmpk`.`tariff`.`cost` AS `cost`,
+        `tmpk`.`tariff`.`start_date` AS `start`,
+        `tmpk`.`tariff`.`finish_date` AS `finish`,
+        `tmpk`.`contract`.`contract` AS `contract_id`
+    FROM
+        ((`tmpk`.`tax`
+        JOIN `tmpk`.`tariff` ON ((`tmpk`.`tariff`.`id` = `tmpk`.`tax`.`tariff_id`)))
+        JOIN `tmpk`.`contract` ON ((`tmpk`.`contract`.`id` = `tmpk`.`tax`.`contract_id`)))
+        
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `tmpk`.`main_contract_info` AS
+    SELECT 
+        `tmpk`.`contract`.`id` AS `id`,
+        `tmpk`.`contract`.`contract` AS `contract_id`,
+        `tmpk`.`contract`.`fio` AS `fio`,
+        `tmpk`.`company`.`name` AS `is_company`,
+        `tmpk`.`status`.`name` AS `status`,
+        `tmpk`.`address`.`city` AS `city`,
+        `tmpk`.`address`.`street` AS `street`,
+        `tmpk`.`address`.`building` AS `building`,
+        `tmpk`.`address`.`apartment` AS `apartment`
+    FROM
+        (((`tmpk`.`contract`
+        JOIN `tmpk`.`address` ON ((`tmpk`.`address`.`id` = `tmpk`.`contract`.`address_id`)))
+        JOIN `tmpk`.`status` ON ((`tmpk`.`status`.`id` = `tmpk`.`contract`.`status_id`)))
+        JOIN `tmpk`.`company` ON ((`tmpk`.`company`.`id` = `tmpk`.`contract`.`company_id`)))
+        
+ CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `tmpk`.`incoming_info` AS
+    SELECT 
+        `tmpk`.`incoming`.`id` AS `id`,
+        `tmpk`.`incoming`.`amount` AS `amount`,
+        `tmpk`.`incoming`.`date` AS `date`,
+        `tmpk`.`contract`.`contract` AS `contract`
+    FROM
+        (`tmpk`.`incoming`
+        JOIN `tmpk`.`contract` ON ((`tmpk`.`contract`.`id` = `tmpk`.`incoming`.`contract_id`)))       
