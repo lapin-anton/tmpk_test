@@ -199,7 +199,7 @@ VIEW `tmpk`.`tax_info` AS
     FROM
         ((`tmpk`.`tax`
         JOIN `tmpk`.`tariff` ON ((`tmpk`.`tariff`.`id` = `tmpk`.`tax`.`tariff_id`)))
-        JOIN `tmpk`.`contract` ON ((`tmpk`.`contract`.`id` = `tmpk`.`tax`.`contract_id`)))
+        JOIN `tmpk`.`contract` ON ((`tmpk`.`contract`.`id` = `tmpk`.`tax`.`contract_id`)));
         
 CREATE 
     ALGORITHM = UNDEFINED 
@@ -220,7 +220,7 @@ VIEW `tmpk`.`main_contract_info` AS
         (((`tmpk`.`contract`
         JOIN `tmpk`.`address` ON ((`tmpk`.`address`.`id` = `tmpk`.`contract`.`address_id`)))
         JOIN `tmpk`.`status` ON ((`tmpk`.`status`.`id` = `tmpk`.`contract`.`status_id`)))
-        JOIN `tmpk`.`company` ON ((`tmpk`.`company`.`id` = `tmpk`.`contract`.`company_id`)))
+        JOIN `tmpk`.`company` ON ((`tmpk`.`company`.`id` = `tmpk`.`contract`.`company_id`)));
         
  CREATE 
     ALGORITHM = UNDEFINED 
