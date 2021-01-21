@@ -1,16 +1,22 @@
 package com.tmpk.task.test.service;
 
 import com.tmpk.task.test.dao.ContractDAO;
+import com.tmpk.task.test.exceptions.ContractNotFoundException;
+import com.tmpk.task.test.exceptions.TaxInfoNotFoundException;
+import com.tmpk.task.test.model.Contract;
 import com.tmpk.task.test.model.IncomingInfo;
 import com.tmpk.task.test.model.MainContractInfo;
 import com.tmpk.task.test.model.TaxInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ContractServiceImpl implements ContractService {
+
+    private static final String UNKNOWN = "Данные отсутствуют";
 
     private ContractDAO contractDAO;
 
@@ -19,12 +25,15 @@ public class ContractServiceImpl implements ContractService {
         this.contractDAO = contractDAO;
     }
 
-    @Override
-    public List<MainContractInfo> getContractInfoById(String id) {
+
+    public List<MainContractInfo> getContractInfoById(String id) throws ContractNotFoundException {
+        List<MainContractInfo> result = contractDAO.getContractInfoById(id);
+        if(result.isEmpty() || result == null) {
+            throw new ContractNotFoundException();
+        }
         return contractDAO.getContractInfoById(id);
     }
 
-    @Override
     public String getBalanceById(String id) {
         double tax = 0;
         double incoming = 0;
@@ -40,13 +49,19 @@ public class ContractServiceImpl implements ContractService {
         return String.format("%.2f р.", result);
     }
 
-    @Override
-    public TaxInfo getTariff(String id) {
+    public List<TaxInfo> getTaxInfo(String id) throws TaxInfoNotFoundException {
         List<TaxInfo> taxInfoList = contractDAO.getTaxInfoById(id);
-        TaxInfo result = null;
-        if(taxInfoList.size() > 0) {
-            result = taxInfoList.get(taxInfoList.size() - 1);
+        if(taxInfoList.isEmpty()) {
+            throw new TaxInfoNotFoundException();
         }
-        return result;
+        return taxInfoList;
+    }
+
+    @Override
+    public Contract getContractById(String id) throws Exception {
+        List<MainContractInfo> mainContractInfoList = getContractInfoById(id);
+        List<TaxInfo> taxInfo = getTaxInfo(id);
+        String balance = getBalanceById(id);
+        return new Contract(mainContractInfoList.get(0), taxInfo.get(0), balance);
     }
 }
